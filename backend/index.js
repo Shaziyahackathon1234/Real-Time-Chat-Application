@@ -16,11 +16,18 @@ const PORT = process.env.PORT || 5000;
 app.use(express.urlencoded({extended:true, limit:'5mb'}));
 app.use(express.json({limit:'5mb'}));
 app.use(cookieParser());
+const allowedOrigins = [
+    'http://localhost:3000',
+    process.env.CLIENT_URL, 
+].filter(Boolean);
 const corsOption={
-    origin:'http://localhost:3000',
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+        return callback(new Error("Not allowed by CORS"));
+    },
     credentials:true
 };
-app.use(cors(corsOption)); 
+app.use(cors(corsOption));
 
 
 // routes
