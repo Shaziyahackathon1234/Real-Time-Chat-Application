@@ -5,10 +5,20 @@ import express from "express";
 const app = express();
 
 const server = http.createServer(app);
+const normalize = (u) => (u || "").replace(/\/+$/, "");
+const staticAllowed = ['http://localhost:3000', normalize(process.env.CLIENT_URL)].filter(Boolean);
+const isAllowedOrigin = (origin) => {
+    if (!origin) return true;
+    const o = normalize(origin);
+    if (staticAllowed.includes(o)) return true;
+    if (o.endsWith('.vercel.app')) return true;
+    return false;
+};
 const io = new Server(server, {
     cors:{
-        origin:['http://localhost:3000', process.env.CLIENT_URL].filter(Boolean),
+        origin: (origin, callback) => callback(null, isAllowedOrigin(origin)),
         methods:['GET', 'POST'],
+        credentials: true,
     },
 });
 

@@ -16,15 +16,17 @@ const PORT = process.env.PORT || 5000;
 app.use(express.urlencoded({extended:true, limit:'5mb'}));
 app.use(express.json({limit:'5mb'}));
 app.use(cookieParser());
-const allowedOrigins = [
-    'http://localhost:3000',
-    process.env.CLIENT_URL, 
-].filter(Boolean);
+const normalize = (u) => (u || "").replace(/\/+$/, ""); // strip trailing slash
+const staticAllowed = ['http://localhost:3000', normalize(process.env.CLIENT_URL)].filter(Boolean);
+const isAllowedOrigin = (origin) => {
+    if (!origin) return true;                       // non-browser / same-origin
+    const o = normalize(origin);
+    if (staticAllowed.includes(o)) return true;
+    if (o.endsWith('.vercel.app')) return true;     // any Vercel deployment
+    return false;
+};
 const corsOption={
-    origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
-        return callback(new Error("Not allowed by CORS"));
-    },
+    origin: (origin, callback) => callback(null, isAllowedOrigin(origin)), // never throws
     credentials:true
 };
 app.use(cors(corsOption));
