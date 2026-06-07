@@ -4,6 +4,9 @@ A full-stack **MERN** real-time chat app where users can register, log in, see w
 
 Built with **React + Redux Toolkit** on the frontend and **Node/Express + MongoDB + Socket.IO** on the backend.
 
+### 🔗 Live Demo
+👉 **[https://real-time-chat-application-id3s.vercel.app](https://real-time-chat-application-id3s.vercel.app/login)**
+
 ---
 
 ## ✨ Features
